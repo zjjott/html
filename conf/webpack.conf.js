@@ -8,31 +8,23 @@ module.exports = {
     devtool: "eval",
     entry: {
         "index": './static/src/jsx/index.jsx',
-        "analyze": './static/src/jsx/analyze',
-        "dashboard": './static/src/jsx/dashboard',
-        "components": ["./static/src/jsx/components/",
+        "component":["./static/src/jsx/components/",],
+        "bundle": [
+            
             'events',
             'object-assign',
-            'redux'
-        ],
-        "echarts": ["echarts"],
-        "bundle": [
+            'redux',
             "underscore",
             "classnames",
             'es6-promise',
             'isomorphic-fetch',
-        ],
-        "react-bundle": [
             'react-dom',
             'react-addons-linked-state-mixin',
             'react-router',
-            "react"
-        ],
-        "material-ui-bundle": [
+            "react",
             'material-ui',
             'react-tap-event-plugin'
         ],
-        "base": './static/src/jsx/base.jsx'
     },
     output: {
         path:  './static/dest/',
@@ -62,7 +54,7 @@ module.exports = {
                 ],
                 query: {
                     cacheDirectory: false,
-                    presets: ['es2015', 'react']
+                    presets: ['latest', 'react']
                 }
                 // loader: 'jsx-loader?insertPragma=React.DOM'
             }, {
@@ -90,26 +82,24 @@ module.exports = {
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             names: [
-                "material-ui-bundle",
-                "react-bundle",
-                "echarts",
                 "bundle",
+                "component",
             ],
             filename: 'js/[name].js',
         }),
-        new CopysWebpackPlugin([{
-            from: './static/src/css',
-            to: './css'
-        },{
-            from: './static/src/fonts',
-            to: './fonts'
-        },{
-            from: './static/src/img',
-            to: './img'
-        },{
-            from: './static/src/js',
-            to: './js'
-        }]),
+        // new CopysWebpackPlugin([{
+        //     from: './static/src/css',
+        //     to: './css'
+        // },{
+        //     from: './static/src/fonts',
+        //     to: './fonts'
+        // },{
+        //     from: './static/src/img',
+        //     to: './img'
+        // },{
+        //     from: './static/src/js',
+        //     to: './js'
+        // }]),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': '"development"'
         }),

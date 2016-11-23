@@ -1,0 +1,43 @@
+{
+  "name": "html",
+  "version": "1.0.0",
+  "description": "How To Machine Learning in five minute",
+  "main": "index.js",
+  "dependencies": {
+    "babel": "^6.5.2",
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.8",
+    "babel-preset-latest": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "classnames": "^2.2.5",
+    "copy-webpack-plugin": "^4.0.1",
+    "es6-promise": "^4.0.5",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "material-ui": "^0.16.4",
+    "promise": "^7.1.1",
+    "react": "^15.4.1",
+    "react-addons-linked-state-mixin": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "react-route": "^1.0.3",
+    "react-router": "^3.0.0",
+    "react-tap-event-plugin": "^2.0.1",
+    "redux": "^3.6.0",
+    "underscore": "^1.8.3",
+    "webpack": "^1.13.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "webpack": "webpack --config=conf/webpack.conf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zjjott/html.git"
+  },
+  "author": "zjjott",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zjjott/html/issues"
+  },
+  "homepage": "https://github.com/zjjott/html#readme"
+}
