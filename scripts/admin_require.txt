@@ -1,0 +1,6 @@
+-r requirements.txt
+Flask-Admin==1.4.0
+Flask-BasicAuth
+blinker==1.4
+Flask-BabelEx==0.9.3
+flask_sqlalchemy==2.1

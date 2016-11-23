@@ -1,0 +1,10 @@
+tornado==4.3
+simplejson==3.8.2
+alembic==0.8.6
+SQLAlchemy==1.0.12
+wtforms==2.1
+pytz==2016.4
+mysqlclient==1.2.5
+raven==5.19
+tornado-redis==2.4.18
+-e git+git@github.com:palmkevin/supervisor-py3k.git@master#egg=Package

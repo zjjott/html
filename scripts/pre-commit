@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+#Python code checker for git pre-commit hook
+exit=0
+GREEN=`tput setaf 2`
+RED=`tput setaf 1`
+YELLOW=`tput setaf 3`
+RESET=`tput sgr0 0`
+file=`git diff --cached --name-only --diff-filter=ACM|grep '\.py$' |tr '\n' ' ' `
+if [[ $file ]];then
+    flake8 --ignore=E501,W404,E125,E126,E128,E731 $file
+    if [ $? -ne 0 ]; then
+        let exit=1
+	echo "${RED}flake8 examine no pass${RESET}"
+    else
+	echo "${GREEN}flake8 examine pass${RESET}"
+    fi
+else
+    echo "${YELLOW}no file to flake8${RESET}"
+fi
+exit $exit
+
