@@ -14,7 +14,9 @@ class FileLoader(Loader):
 
     def __init__(self, root_directory, **kwargs):
         kwargs["namespace"] = {
-            "base_url": options.callback_host + options.base_url}
+
+
+        }
         super(FileLoader, self).__init__(root_directory, **kwargs)
 
     def load(self, name, parent_path=None):

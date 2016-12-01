@@ -2,11 +2,16 @@
 
 
 {%block body %}
-<div class="body">
+<div class="body" id="container">
     <div class="jumbotron">
       <div class="container">
-        <p>新月~快跑~</p>
+        <p>加载中</p>
       </div>
     </div>
 </div>
+{%end%}
+
+{%block script%}
+<script src="{{static_url("js/bundle.js")}}"></script>
+<script src="{{static_url("js/index.js")}}"></script>
 {%end%}

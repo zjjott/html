@@ -58,8 +58,7 @@ class BaseHandler(JSONBaseHandler):
                                                  session_id)
             self.set_cookie('tsession',
                             session_id,
-                            expires_days=3,
-                            path=options.base_url)  # 3天session过期？
+                            expires_days=3)  # 3天session过期？
         else:
             self.request.session = session_class(self,
                                                  session_id)
@@ -93,14 +92,6 @@ class BaseHandler(JSONBaseHandler):
             }
         }
 
-    def reverse_url(self, name, *args):
-        url = super(BaseHandler, self).reverse_url(name, *args)
-        if url.startswith(options.base_url):
-            return url
-        else:
-            url = options.base_url + url  # 中间还有一个//
-            url = url.replace("//", "/")
-            return url
 
 
 class BAAuthView(RequestHandler):

@@ -10,7 +10,12 @@ module.exports = {
         "index": './static/src/jsx/index.jsx',
         "component":["./static/src/jsx/components/",],
         "bundle": [
-            
+            'react-dom',
+            'react-addons-linked-state-mixin',
+            'react-router',
+            "react",
+            'react-bootstrap',
+            'react-tap-event-plugin',
             'events',
             'object-assign',
             'redux',
@@ -18,12 +23,7 @@ module.exports = {
             "classnames",
             'es6-promise',
             'isomorphic-fetch',
-            'react-dom',
-            'react-addons-linked-state-mixin',
-            'react-router',
-            "react",
-            'material-ui',
-            'react-tap-event-plugin'
+            
         ],
     },
     output: {
@@ -78,19 +78,19 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             names: [
                 "bundle",
-                "component",
+                // "component",
             ],
             filename: 'js/[name].js',
         }),
-        // new CopysWebpackPlugin([{
-        //     from: './static/src/css',
-        //     to: './css'
-        // },{
+        new CopysWebpackPlugin([{
+            from: './static/src/css',
+            to: './css'
+        },
+        // {
         //     from: './static/src/fonts',
         //     to: './fonts'
         // },{
@@ -99,7 +99,9 @@ module.exports = {
         // },{
         //     from: './static/src/js',
         //     to: './js'
-        // }]),
+        // }
+        ]
+        ),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': '"development"'
         }),

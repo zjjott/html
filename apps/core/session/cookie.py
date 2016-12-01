@@ -58,7 +58,7 @@ class CookieStore(object):
         return self._store.iteritems()
 
     def clear(self):
-        self.handler.clear_cookie(self._session_key, path=options.base_url)
+        self.handler.clear_cookie(self._session_key)
         return self._store.clear()
 
     def save(self):
@@ -66,7 +66,6 @@ class CookieStore(object):
             self._session_key,
             dumps(self._store),
             expires_days=options.session_cookie_age,
-            path=options.base_url
         )
 
 

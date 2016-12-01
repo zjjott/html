@@ -46,13 +46,7 @@ class IndexHandler(BaseHandler):
     loader = FileLoader("templates/")  # tornado会缓存模板。。
 
     def get(self):
-        return self.redirect(self.reverse_url("analyze:index"))
-
-        # template = self.loader.load("index.html")
-        # html = template.generate(user=self.current_user,
-        # static_url=self.static_url,
-        # host=self.request.host)
-        # self.write(html)
+        return self.render("index.html")
 
     def post(self):
         raise ValueError("test error")

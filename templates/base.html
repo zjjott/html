@@ -11,7 +11,7 @@
 
     <link rel="shortcut icon" href="static/img/icon.png">
     {%block reset-style%}
-        <link rel="stylesheet" type="text/css" href="{{static_url("css/base.css") }}" />
+        <link rel="stylesheet" type="text/css" href="{{static_url("css/bootstrap.min.css") }}" />
     {%end%}
 
     {%block style%}{%end%}
@@ -20,7 +20,10 @@
 </head>
 
 <body>
-
+{%block body%}
+{%end%}
 </body>
+{%block script%}
+{%end%}
 
 </html>

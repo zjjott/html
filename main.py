@@ -12,9 +12,9 @@ from apps.core.template import FileLoader
 
 settings = {
     "cookie_secret": options.secret,
-    "login_url": options.base_url + "user/login/",
+    "login_url": "/user/login/",
     "static_path": "static/dest",
-    "static_url_prefix": options.base_url + "static/",
+    "static_url_prefix": "/static/",
     "compress_response": True,
     "debug": options.debug,
     "ui_modules": uimodules,
@@ -29,7 +29,7 @@ def make_app():
         (r"/static/(.*)", tornado.web.StaticFileHandler,
          {"path": "static/dest"}),
     ]
-    new_urls = url1 + urls + ec2_urls + toilet_urls
+    new_urls = url1 + urls
     # print "make_app"
     return tornado.web.Application(new_urls,
                                    **settings)
