@@ -36,6 +36,16 @@ define("cache_engine", default="apps.core.cache.memory.MemoryCache")
 define("cache_options", default=dict())
 
 define("process_num", default=0)  # 0即CPU个数
+define("broker_transport", default="redis")
+define("broker_url", default="redis://127.0.0.1:6379/0")
+define("celery_result_backend", default="redis://127.0.0.1:6379/0")
+define("celery_task_result_expires", type=int, default=1800)
+define("celery_max_cached_results", type=int, default=300)
+define("celery_timezone", default='Asia/Shanghai')
+define("celeryd_concurrency", type=int, default=6)
+define("celery_accept_content", type=list, default=['pickle',
+                                                    'json',
+                                                    'msgpack', 'yaml'])
 
 
 parse_config_file("conf/app.conf")

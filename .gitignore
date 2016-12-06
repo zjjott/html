@@ -2,3 +2,6 @@
 node_modules/
 *.log
 .env/
+*.sublime-workspace
+*.sublime-project
+conf/app.conf
