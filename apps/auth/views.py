@@ -76,11 +76,21 @@ class UserAuthAjaxHandle(UserAuthBaseHandle):
             self.handle_auth_fail()
 
 
+class CurrentHandler(UserAuthAjaxHandle):
+    def handle_auth_fail(self):
+        """可以重载，以支持不同的回调类型"""
+        self.json_respon({"user_id": None})
+
+    def get(self):
+        return self.json_respon({"user_id": self.current_user})
+
+
 class LoginHandler(BaseHandler):
 
     @coroutine
     def get(self):
-        return
+        self.request.session['user_id'] = int(random() * 1000)
+        return self.redirect("/")
 
 
 class LogoutHandler(UserAuthBaseHandle):
@@ -89,36 +99,4 @@ class LogoutHandler(UserAuthBaseHandle):
         """登出理应是post的,有csrf问题呢"""
         self.request.session.clear()
         self.clear_all_cookies()
-        url = self.reverse_url("login")
-        return self.redirect(url)
-
-
-class CallbackHandler(BaseHandler):
-
-    @coroutine
-    def fetch_user(self, token):
-        client = BAHTTPClient(options.mt_user_id,
-                              options.mt_user_secret,
-                              options.mt_sso_host)
-        response = yield client.get(options.mt_sso_userinfo,
-                                    {"token": token,
-                                     'appid': 'mos',
-                                     'fields': 'username,email,mobile,id'})
-        if response.code != 200:
-            raise Return({'code': response.code,
-                          'message': '登录失败:%s',
-                          })
-        try:
-            respon = loads(response.body)
-        except Exception, e:
-            raise Return({'code': 500,
-                          'message': '登录错误:%s' % e,
-                          })
-        if 'error' in respon:
-            respon = respon['error']
-        respon['code'] = response.code
-        raise Return(respon)
-
-    @coroutine
-    def post(self):  # 免登陆
-        self.request.session['user_id'] = random() * 1000
+        return self.redirect("/")

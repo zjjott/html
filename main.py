@@ -34,6 +34,8 @@ def make_app():
     # print "make_app"
     return tornado.web.Application(new_urls,
                                    **settings)
+
+
 if __name__ == '__main__':
     app = make_app()
     if options.debug:

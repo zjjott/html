@@ -16,3 +16,4 @@ futures==3.0.5
 openpyxl==2.3.5
 boto3==1.4.0
 flake8
+celery==4.0.0
