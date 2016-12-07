@@ -8,7 +8,12 @@ module.exports = {
     devtool: "eval",
     entry: {
         "index": './static/src/jsx/index.jsx',
-        "component":["./static/src/jsx/components/",],
+        "components-bundle": [
+            'object-assign',
+            'redux',
+            'events',
+            "./static/src/jsx/components/",
+        ],
         "bundle": [
             'react-dom',
             'react-addons-linked-state-mixin',
@@ -16,9 +21,6 @@ module.exports = {
             "react",
             'react-bootstrap',
             'react-tap-event-plugin',
-            'events',
-            'object-assign',
-            'redux',
             "underscore",
             "classnames",
             'es6-promise',
@@ -78,13 +80,14 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.optimize.OccurenceOrderPlugin(),
+        // new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             names: [
+                "components-bundle",
                 "bundle",
-                // "component",
             ],
             filename: 'js/[name].js',
+            minChunks: Infinity
         }),
         new CopysWebpackPlugin([{
             from: './static/src/css',

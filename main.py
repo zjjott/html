@@ -4,6 +4,7 @@ import tornado.ioloop
 from apps.views import IndexHandler, APIHandler
 from apps.auth.urls import urls
 from apps.taskapi.urls import urls as task_urls
+from apps.dataset.urls import urls as data_urls
 import apps.conf  # noq
 from tornado.options import options
 from tornado.ioloop import IOLoop
@@ -30,7 +31,7 @@ def make_app():
         (r"/static/(.*)", tornado.web.StaticFileHandler,
          {"path": "static/dest"}),
     ]
-    new_urls = url1 + urls + task_urls
+    new_urls = url1 + urls + task_urls + data_urls
     # print "make_app"
     return tornado.web.Application(new_urls,
                                    **settings)

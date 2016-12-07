@@ -2,9 +2,6 @@
 from __future__ import unicode_literals
 from tornado.gen import coroutine, Return
 from apps.core.views import BaseHandler
-from tornado.options import options
-from apps.core.httpclient import BAHTTPClient
-from simplejson import loads
 import urlparse
 from urllib import urlencode
 from tornado.web import HTTPError

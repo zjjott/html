@@ -5,3 +5,5 @@ node_modules/
 *.sublime-workspace
 *.sublime-project
 conf/app.conf
+sftp-config.json
+data/*.db
