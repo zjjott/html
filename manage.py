@@ -5,7 +5,7 @@ import argparse
 from apps.core.manager import managers
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Tornado web shell')
+        description='Tornado Bigdata web shell')
     subparsers = parser.add_subparsers()
     for manage in managers:
         manage(subparsers)

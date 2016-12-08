@@ -2,7 +2,8 @@ var React = require('react');
 var ReactDom = require('react-dom');
 import Dataset from './dataset'
 var _ = require("underscore")
-import {Grid,Tab,Row,Nav,NavItem,Navbar,Panel} from "react-bootstrap"
+import {Grid,Tab,Row,Nav,NavItem,Navbar,Panel,
+ButtonToolbar,Button} from "react-bootstrap"
 import {EventStore} from './components'
 function paramsReducer(state,action){
     switch(action.type){
@@ -41,11 +42,34 @@ const TrainProgress = React.createClass({
         this.store.removeListener("dataset",this.onDatasetChange)
         
     },
+    onNextStep(){
+        this.setState({activeTab:this.state.activeTab+1})
+    },
+    onPrevStep(){
+        this.setState({activeTab:this.state.activeTab-1})
+    },
     handleSelect(selectedKey) {
         this.setState({activeTab:selectedKey})
     },
     render(){
-
+        var nextBtnDisable;
+        switch(this.state.activeTab)
+        {
+            case 1:{
+                nextBtnDisable=!this.state.dataset
+                break
+            }
+            case 2:{
+                nextBtnDisable=!this.state.model
+                break
+            }
+            case 3:{
+                nextBtnDisable=false   
+                break
+            }
+            default:
+                nextBtnDisable=true
+        }
         return <div>
         <Nav bsStyle="tabs" 
         justified 
@@ -55,8 +79,21 @@ const TrainProgress = React.createClass({
           </NavItem>
           <NavItem eventKey={2} disabled={!this.state.dataset}>选择模型</NavItem>
           <NavItem eventKey={3} disabled={!this.state.model}>开始</NavItem>
-        </Nav>
+        </Nav> 
+        <ButtonToolbar >
+        <Button className="pull-right" 
+            bsStyle="primary"
+            onClick={this.onNextStep}
+            disabled={nextBtnDisable}>下一步</Button>
+        {this.state.activeTab>1?
+            <Button className="pull-right" 
+            bsStyle="primary" onClick={this.onPrevStep}>上一步</Button>
+        :null}
+            
+        </ButtonToolbar>
         {this.state.activeTab==1?<Dataset />:null}
+
+
         </div> 
 
     }
