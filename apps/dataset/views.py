@@ -41,3 +41,4 @@ class DataPreviewView(UserAuthAjaxHandle):
                                     })
         else:
             return self.json_error_respon(code=404)
+

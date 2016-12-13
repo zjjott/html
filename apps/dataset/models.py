@@ -4,8 +4,11 @@ from __future__ import unicode_literals
 from apps.core.models.base import ModelBase
 from sqlalchemy import (Column, Integer,
                         VARCHAR, Index, BLOB,
+                        Boolean,
                         Text)
-from apps.core.models.fields import NoConstraintEnum
+from sqlalchemy.orm import relationship, backref
+
+from apps.core.models.fields import NoConstraintEnum, JSONField
 
 
 class DatasetModel(ModelBase):
@@ -28,3 +31,4 @@ class DatasetModel(ModelBase):
     def list(cls):
         return cls.query(cls.id, cls.name,
                          cls.description, cls.type)
+
