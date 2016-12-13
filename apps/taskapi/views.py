@@ -25,7 +25,6 @@ class ListMethodView(UserAuthAjaxHandle):
             cleaned_data = form.data
             query = MLMethod.query()
             public = cleaned_data['public']
-            print cleaned_data
             if public:
                 query = query.filter_by(public=True)
             else:

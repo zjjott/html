@@ -1,6 +1,7 @@
 var React = require('react');
 var ReactDom = require('react-dom');
 import Dataset from './dataset'
+import MethodList from './methods'
 var _ = require("underscore")
 import {Grid,Tab,Row,Nav,NavItem,Navbar,Panel,
 ButtonToolbar,Button} from "react-bootstrap"
@@ -9,6 +10,9 @@ function paramsReducer(state,action){
     switch(action.type){
         case "dataset":{
             return _.extend(state,{dataset:action.data})
+        }
+        case "method":{
+            return _.extend(state,{method:action.data})
         }
         default:
             return state
@@ -92,6 +96,7 @@ const TrainProgress = React.createClass({
             
         </ButtonToolbar>
         {this.state.activeTab==1?<Dataset />:null}
+        {this.state.activeTab==2?<MethodList />:null}
 
 
         </div> 
