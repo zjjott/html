@@ -23,10 +23,7 @@ class MLMethod(ModelBase):
     data = Column(BLOB, nullable=True,
                   doc="模型的dump")
 
-    def to_dict(self):
-        obj_dict = super(MLMethod, self).to_dict()
-        obj_dict['kwargs'] = [i.to_dict() for i in self.kwargs]
-        return obj_dict
+
 
 
 class MethodKwargs(ModelBase):

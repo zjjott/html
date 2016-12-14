@@ -1,7 +1,7 @@
 var React = require('react');
 var ReactDom = require('react-dom');
 import Dataset from './dataset'
-import MethodList from './methods'
+import {MethodList,MethodKwargs} from './methods'
 var _ = require("underscore")
 import {Grid,Tab,Row,Nav,NavItem,Navbar,Panel,
 ButtonToolbar,Button} from "react-bootstrap"
@@ -27,7 +27,7 @@ const TrainProgress = React.createClass({
         return {
             activeTab:1,
             dataset:null,
-            model:null,
+            method:null,
         };
     },
     onDatasetChange(data){
@@ -36,14 +36,23 @@ const TrainProgress = React.createClass({
                 dataset:data
             })
     },
+    onMethodChange(data){
+        console.log("method",data)
+        if(data!=this.state.method)
+            this.setState({
+                method:data
+            })
+    },
     getChildContext() {
         return {store: this.store};
     },
     componentDidMount: function() {
         this.store.addListener("dataset",this.onDatasetChange)
+        this.store.addListener("method",this.onMethodChange)
     },
     componentWillUnmount: function() {
         this.store.removeListener("dataset",this.onDatasetChange)
+        this.store.removeListener("method",this.onMethodChange)
         
     },
     onNextStep(){
@@ -64,7 +73,7 @@ const TrainProgress = React.createClass({
                 break
             }
             case 2:{
-                nextBtnDisable=!this.state.model
+                nextBtnDisable=!this.state.method
                 break
             }
             case 3:{
@@ -82,7 +91,7 @@ const TrainProgress = React.createClass({
           <NavItem eventKey={1} >选择数据集
           </NavItem>
           <NavItem eventKey={2} disabled={!this.state.dataset}>选择模型</NavItem>
-          <NavItem eventKey={3} disabled={!this.state.model}>开始</NavItem>
+          <NavItem eventKey={3} disabled={!this.state.method}>开始</NavItem>
         </Nav> 
         <ButtonToolbar >
         <Button className="pull-right" 
@@ -97,6 +106,7 @@ const TrainProgress = React.createClass({
         </ButtonToolbar>
         {this.state.activeTab==1?<Dataset />:null}
         {this.state.activeTab==2?<MethodList />:null}
+        {this.state.activeTab==3?<MethodKwargs />:null}
 
 
         </div> 
