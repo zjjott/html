@@ -41,10 +41,12 @@ def upgrade():
                                            length=20), nullable=True),
                                        sa.Column('label', sa.VARCHAR(
                                            length=50), nullable=True),
+                                       sa.Column('required', sa.Boolean(),
+                                                 nullable=True),
                                        sa.Column('description',
                                                  sa.Text(), nullable=True),
                                        sa.Column('type', NoConstraintEnum(
-                                           u'int', u'list', native_enum=False), nullable=True),
+                                           u'int', u'list', u'image', native_enum=False), nullable=True),
                                        sa.PrimaryKeyConstraint('id'),
                                        mysql_charset=u'utf8',
                                        mysql_engine=u'InnoDB'
@@ -84,6 +86,15 @@ def upgrade():
             DNNClassifier,
         ]
     ]
+    from apps.asynctask.tasks import ClassifyImageTask
+    data.append({
+        "user_id": None,
+        "name": "imagenet",
+        "description": "图像(100x100)分类,类别1000",
+        "public": True,
+        "trained": True,
+        "data": dumps(ClassifyImageTask),
+    })
     op.bulk_insert(mlmethods_tbl,
                    data
                    )
@@ -94,7 +105,8 @@ def upgrade():
                            "model_id": i + 1,
                            "name": "dimension",
                            "label": "特征维度",
-                           "type": "int"
+                           "type": "int",
+                           "required": True,
                        } for i in range(4)
                    ]
                    )
@@ -104,10 +116,21 @@ def upgrade():
                            "model_id": i + 3,
                            "name": "hidden_units",
                            "label": "隐含层各层数量",
-                           "type": "list"
+                           "type": "list",
+                           "required": True,
                        } for i in range(2)
                    ]
                    )
+    op.bulk_insert(methodkwargs_tbl, [
+        {"model_id": 5,
+         "name": "image",
+         "label": "图片",
+         "description": "需要进行分类的图片",
+         "required": True,
+         "type": "image"
+         }
+    ])
+
     ### end Alembic commands ###
 
 

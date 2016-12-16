@@ -4,7 +4,7 @@ from wtforms.form import Form
 from wtforms.compat import iteritems
 from wtforms.validators import ValidationError
 from simplejson import loads
-from wtforms.fields import SelectField, FileField
+from wtforms.fields import SelectField, FileField, StringField
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField
 from datetime import date, timedelta
 from apps.core.const import DATE_RANGE
@@ -137,6 +137,21 @@ class JSONValidator(object):
                 raise ValidationError(message)
         else:
             field.data = {}
+
+
+class ListField(StringField):
+
+    def _value(self):
+        if self.data:
+            return u', '.join(self.data)
+        else:
+            return u''
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            self.data = [x.strip() for x in valuelist[0].split(',')]
+        else:
+            self.data = []
 
 
 class DateRangeField(SelectField):

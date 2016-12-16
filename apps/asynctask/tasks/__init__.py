@@ -1,2 +1,3 @@
 from .dnn import DNNClassifierTrainTask
-__all__ = ['DNNClassifierTrainTask']
+from .imagenet import ClassifyImageTask
+__all__ = ['DNNClassifierTrainTask', 'ClassifyImageTask']

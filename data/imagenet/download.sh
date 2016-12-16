@@ -1,0 +1,1 @@
+wget https://msstest-corp.sankuai.com/v1/mss_pDsVowxyKUqkXVaRNmSyMg==/html/classify_image_graph_def.pb

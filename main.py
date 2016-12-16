@@ -11,7 +11,6 @@ from tornado.ioloop import IOLoop
 from tornado.httpserver import HTTPServer
 from apps.core import uimodules
 from apps.core.template import FileLoader
-
 settings = {
     "cookie_secret": options.secret,
     "login_url": "/user/login/",

@@ -3,7 +3,12 @@ from __future__ import unicode_literals
 from apps.auth.views import UserAuthAjaxHandle
 from apps.asynctask import app
 from apps.taskapi.models import MethodKwargs, MLMethod
-from apps.taskapi.forms import ListMethodForm
+from apps.taskapi.forms import (ListMethodForm, form_factory)
+from sqlalchemy.sql.expression import or_, and_
+from cPickle import loads
+from tornado.web import asynchronous
+from apps.asynctask import app as celery_app
+from tornado.ioloop import IOLoop
 
 
 class ListQueueView(UserAuthAjaxHandle):
@@ -15,6 +20,16 @@ class ListQueueView(UserAuthAjaxHandle):
         for server, usage in stats.iteritems():
             result[server] = usage["pool"]["writes"]["inqueues"]
         return self.json_respon(result)
+
+
+class TaskDetail(UserAuthAjaxHandle):
+
+    def get(self, task_id):
+        meta = celery_app.backend.get_task_meta(task_id)
+        for key, value in meta.iteritems():
+            if isinstance(value, Exception):
+                meta[key] = str(value)
+        return self.json_respon(meta)
 
 
 class ListMethodView(UserAuthAjaxHandle):
@@ -48,11 +63,20 @@ class ListMethodView(UserAuthAjaxHandle):
 
 
 class MethodDetailView(UserAuthAjaxHandle):
+
+    def filter_query(self, query):
+        query = query.filter(or_(MLMethod.public,
+                                 and_(~MLMethod.public,
+                                      MLMethod.user_id == self.current_user)))
+        return query
+
     def get(self, id):
-        method = MLMethod.query(
+        query = MLMethod.query(
             MLMethod.id,
             MLMethod.name,
-        ).filter_by(id=id).first()
+        ).filter_by(id=id)
+        query = self.filter_query(query)
+        method = query.first()
         if not method:
             return self.json_error_respon("method not found", code=404)
         id, name = method
@@ -64,3 +88,43 @@ class MethodDetailView(UserAuthAjaxHandle):
         obj['kwargs'] = [i.to_dict()
                          for i in MethodKwargs.query().filter_by(model_id=id)]
         return self.json_respon(obj)
+
+    def wait_result(self, result):
+        if result.ready():
+            self.on_result(result.get())
+        else:
+            io_loop = IOLoop.current()
+            io_loop.add_timeout(1000, self.wait_result, result)
+
+    @asynchronous
+    def post(self, id):
+        query = MLMethod.query()
+        query = self.filter_query(query)
+        method = query.filter_by(id=id).first()
+        if not method:
+            return self.json_error_respon(
+                "method not found", code=404)
+        form_class = form_factory(method.kwargs)
+        form = form_class(self)
+        if form.validate():
+            cleaned_data = form.data
+            action = cleaned_data.pop("action", "train")
+            sync = cleaned_data.pop("sync", False)
+            if action == "predict" and method.trained:
+                task = loads(method.data)
+                for k, v in cleaned_data.iteritems():
+                    print k, type(v)
+                result = task.apply_async(kwargs=cleaned_data)
+                if sync:
+                    self.wait_result(result)
+                else:
+                    return self.json_respon(result.task_id)
+            elif action == "train":
+                self.json_respon()
+            else:
+                return self.json_error_respon("确定你提交了一个可以预测的模型或者可以训练的模型")
+        else:
+            return self.json_error_respon(form.errors)
+
+    def on_result(self, result):
+        self.json_respon(result)

@@ -24,8 +24,6 @@ class MLMethod(ModelBase):
                   doc="模型的dump")
 
 
-
-
 class MethodKwargs(ModelBase):
     id = Column(Integer, primary_key=True)
     model_id = Column(Integer, doc="归属的模型ID")
@@ -40,8 +38,10 @@ class MethodKwargs(ModelBase):
     name = Column(VARCHAR(length=20))
     label = Column(VARCHAR(length=50), nullable=True)
     description = Column(Text, nullable=True)
+    required = Column(Boolean)
     type = Column(NoConstraintEnum(*[
         "int",
-        "list"
+        "list",
+        "image",
     ]), doc="参数类型验证"
     )
