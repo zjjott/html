@@ -46,7 +46,7 @@ def upgrade():
                                        sa.Column('description',
                                                  sa.Text(), nullable=True),
                                        sa.Column('type', NoConstraintEnum(
-                                           u'int', u'list', u'image', native_enum=False), nullable=True),
+                                           u'int', u'list', u'image', u'file', u'str', native_enum=False), nullable=True),
                                        sa.PrimaryKeyConstraint('id'),
                                        mysql_charset=u'utf8',
                                        mysql_engine=u'InnoDB'

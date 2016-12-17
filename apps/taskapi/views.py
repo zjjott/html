@@ -111,6 +111,8 @@ class MethodDetailView(UserAuthAjaxHandle):
             cleaned_data = form.data
             action = cleaned_data.pop("action", "train")
             sync = cleaned_data.pop("sync", False)
+            if action == "train" and method.trained:
+                return self.json_error_respon("确定你提交了一个可以预测的模型或者可以训练的模型")
             if action == "predict" and method.trained:
                 task = loads(method.data)
                 if isinstance(task, tuple):
@@ -127,18 +129,23 @@ class MethodDetailView(UserAuthAjaxHandle):
             elif action == "train":
                 dataset = cleaned_data.get("dataset")
                 if dataset:
-                    CustomerTrainTask.apply_async(args=[
+                    result = CustomerTrainTask.apply_async(args=[
                         dataset,
                         id,
                         self.current_user
                     ], kwargs=cleaned_data)
-                    self.json_respon(cleaned_data)
-                else:
-                    pass
+            if sync:
+                self.wait_result(result)
             else:
-                return self.json_error_respon("确定你提交了一个可以预测的模型或者可以训练的模型")
+                return self.json_respon(result.task_id)
         else:
             return self.json_error_respon(form.errors)
 
     def on_result(self, result):
-        self.json_respon(result)
+        headers = None
+        if isinstance(result, list):
+            for row in result:
+                if isinstance(row, dict):
+                    headers = row.keys()
+                    break
+        self.json_respon(result, headers=headers)

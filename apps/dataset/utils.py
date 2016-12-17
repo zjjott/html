@@ -3,8 +3,6 @@ from __future__ import division
 from __future__ import print_function
 
 import csv
-
-
 import numpy as np
 from tensorflow.python.platform import gfile
 from collections import namedtuple
@@ -51,8 +49,17 @@ def load_dataset(csv_file, target_dtype=np.int,
     # target = np.zeros((n_samples,), dtype=target_dtype)
     target = []
     for i, row in enumerate(data_file):
-        target.append(np.asarray(row.pop(target_column), dtype=target_dtype))
+        new_row = float(row.pop(target_column))
+        row = map(float, row)
+        target.append(np.asarray(new_row, dtype=target_dtype))
         data.append(np.asarray(row, dtype=features_dtype))
     target = np.asarray(target, dtype=target_dtype)
     data = np.asarray(target, dtype=features_dtype)
     return Dataset(data=data, target=target)
+
+
+def flat_numpy(np_datastruct):
+    if isinstance(np_datastruct, np.ndarray):
+        return np_datastruct.tolist()
+    else:
+        return np_datastruct

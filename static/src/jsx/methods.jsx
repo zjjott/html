@@ -81,10 +81,16 @@ const ArgInput = React.createClass({
             case "int":{
                 return {"value":this.props.value||0}
             }
+            case "str":{
+                return {"value":this.props.value||""}
+
+            }
             case "list":{
                 return {"value":[]}
             }
-            case "image":{
+            case "file":
+            case "image":
+            {
                 return {"value":null}
             }
         }
@@ -121,7 +127,6 @@ const ArgInput = React.createClass({
         }
     },
     handleFileChange(e){
-        console.log("file",e.target.files[0])
         this.setState({"value":e.target.files[0]})
         var state = this.context.store.getState()
         var new_state = state["kwargs"]||{}
@@ -159,14 +164,25 @@ const ArgInput = React.createClass({
             placeholder="输入一个数字"
             onChange={this.handleChange}
           />
-          case "image":
+            case "str":
+                return <FormControl
+            type="text"
+            value={this.state.value}
+            placeholder="输入数据文本"
+            onChange={this.handleChange}
+          />
+            case "file":
+                return <FormControl
+                        type="file"
+                        onChange={this.handleFileChange}
+                />
+            case "image":
                 var img;
                 var rootele = this;
                 if(this.state.value){
                     var reader  = new FileReader();
                     reader.readAsDataURL(this.state.value)
                     reader.addEventListener("load", function () {
-                        console.log("read finish",rootele.refs.img)
                         rootele.refs.img.src = reader.result;
                     }, false);
                 }
@@ -174,7 +190,7 @@ const ArgInput = React.createClass({
                         ><FormControl
             type="file"
             onChange={this.handleFileChange}
-          />{this.state.value?<img ref="img"/>:null}
+          />{this.state.value?<img ref="img" width={100} height={100}/>:null}
                     </FormGroup>
             case "list":
                 return <FormGroup

@@ -5,7 +5,7 @@ import Dataset from './dataset'
 import {MethodList,MethodKwargs} from './methods'
 var _ = require("underscore")
 import {Grid,Tab,Row,Nav,NavItem,Navbar,Panel,
-ButtonToolbar,Button} from "react-bootstrap"
+ButtonToolbar,Button,Modal} from "react-bootstrap"
 import {EventStore,newfetch,GetParams} from './components'
 function paramsReducer(state,action){
     switch(action.type){
@@ -33,6 +33,7 @@ const TrainProgress = React.createClass({
             activeTab:1,
             dataset:null,
             method:null,
+            dialog:false
         };
     },
     onDatasetChange(data){
@@ -65,9 +66,14 @@ const TrainProgress = React.createClass({
         }
         else{
             var state = this.store.getState()
+            this.setState({
+                dialog:true,
+                dialog_msg:"正在训练"
+            })
             // var params = new GetParams()
             var form = new FormData()
             form.set("action","train")
+            form.set("sync",true)
             form.set("dataset",state.dataset)
             _.forEach(state.kwargs,(value,key)=>{
                 form.set(key,value)
@@ -77,10 +83,38 @@ const TrainProgress = React.createClass({
             ).then((response)=>{
                 return response.json()
             }).then((response_json)=>{
-                console.log("onStart response",response_json)
+                if(response_json.code==200){
+                    this.setState({
+                        dialog:true,
+                        dialog_msg:"训练已完成",
+                        dialog_data:response_json.data
+                    })
+                }
+                else if(response_json.code<500){
+                    this.setState({dialog:true,
+                        dialog_msg:"参数错误 "+_.map(response_json.error,(value,key)=>{
+                            return `${key}:${value}`
+                        }).join("")
+                    })
+                }
+                else{
+                    this.setState({
+                        dialog:true,
+                        dialog_msg:"训练失败了"
+                    })
+                }
             })
 
         }
+    },
+    onToPredict(){
+        this.onCloseDialog()
+
+    },
+    onCloseDialog(){
+        this.setState({
+            dialog:false
+        })
     },
     onPrevStep(){
         this.setState({activeTab:this.state.activeTab-1})
@@ -134,7 +168,21 @@ const TrainProgress = React.createClass({
         {this.state.activeTab==1?<Dataset />:null}
         {this.state.activeTab==2?<MethodList public={true} trained={false}/>:null}
         {this.state.activeTab==3?<MethodKwargs />:null}
-        
+        <Modal show={this.state.dialog} bsSize="small" onHide={this.onCloseDialog}>
+      <Modal.Header>
+        <Modal.Title>训练进度</Modal.Title>
+      </Modal.Header>
+
+      <Modal.Body>
+        {this.state.dialog_msg}
+      </Modal.Body>
+
+      <Modal.Footer>
+        <Button onClick={this.onToPredict}>不等了去预测</Button>
+        <Button onClick={this.onCloseDialog}>继续训练</Button>
+      </Modal.Footer>
+
+    </Modal>
 
 
         </div> 

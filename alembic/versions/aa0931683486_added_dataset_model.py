@@ -1,3 +1,4 @@
+# coding=utf-8
 """Added Dataset Model
 
 Revision ID: aa0931683486
@@ -56,7 +57,17 @@ def upgrade():
             "name": name,
             "type": "csv",
             "target_column": -1,
-            "data": content
+            "data": content,
+            "description": "鸢尾花花瓣数据样本https://en.wikipedia.org/wiki/Iris_flower_data_set",
+        })
+    with open("data/housing.csv") as fin:
+        content = fin.read()
+        dataset_list.append({
+            "name": "boston_price",
+            "type": "csv",
+            "target_column": -1,
+            "data": content,
+            "description": "波士顿房价数据样本http://archive.ics.uci.edu/ml/datasets/Housing",
         })
     op.bulk_insert(dataset_table, dataset_list)
     op.create_table('users_tbl',

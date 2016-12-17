@@ -7,6 +7,7 @@ import os
 import re
 import numpy as np
 from PIL import Image
+from cStringIO import StringIO
 MODEL_DIR = "data/imagenet"
 NUM_TOP_PREDICTIONS = 5
 
@@ -78,8 +79,27 @@ class NodeLookup(object):
 
 @app.task(bind=True, base=MLBaseTask, typing=False)
 def ClassifyImageTask(self, image, **kwargs):
-    # Image.open(image)
-    image_data = image.read()
+    image.seek(0)
+    new_image = Image.open(image)
+    if new_image.size != (100, 100):  # resize
+        width, height = new_image.size
+        if width > height:
+            left = (width - height) / 2
+            right = width - left
+            top = 0
+            bottom = height
+        else:
+            top = (height - width) / 2
+            bottom = height - top
+            left = 0
+            right = width
+        new_image = new_image.crop((left, top, right, bottom))
+        new_image = new_image.resize([100, 100],
+                                     Image.ANTIALIAS)
+    s = StringIO()
+    new_image.save(s, "jpeg")
+    s.seek(0)
+    image_data = s.read()
     with tf.gfile.FastGFile(
             os.path.join(MODEL_DIR, 'classify_image_graph_def.pb'),
             'rb') as f:
@@ -99,7 +119,7 @@ def ClassifyImageTask(self, image, **kwargs):
         for node_id in top_k:
             human_string = node_lookup.id_to_string(node_id)
             score = predictions[node_id]
-            if score > 0.001:
+            if score > 0.01:
                 result.append({
                     "human_string": human_string,
                     "score": float(score)

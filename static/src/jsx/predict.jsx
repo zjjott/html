@@ -4,6 +4,7 @@ import Dataset from './dataset'
 import {MethodList,MethodKwargs} from './methods'
 var _ = require("underscore")
 import {Grid,Tab,Row,Nav,NavItem,Navbar,Panel,
+    Table,Modal,
 ButtonToolbar,Button} from "react-bootstrap"
 import {EventStore,newfetch,GetParams} from './components'
 import InputGroup from './input'
@@ -20,7 +21,44 @@ function paramsReducer(state,action){
             return state
     }
 }
+const PredictResult = React.createClass({
+    render(){
 
+        return <Table striped bordered condensed>
+        {this.props.headers?<thead>
+            <tr>
+            {this.props.headers.map((h,index)=>{
+                return <th key={index}>{h}</th>
+
+            })
+            }
+            </tr>
+        </thead>
+        :
+            <thead>
+            <tr>
+                <th>预测结果</th>
+            </tr>
+        </thead>}
+        <tbody>
+        {this.props.headers?
+            this.props.data.map((row,index)=>{
+                return <tr key={index}>
+                    {this.props.headers.map((h)=>{
+                        return <td key={h}>{row[h]}</td>
+                    })}
+                </tr>
+            }):
+            this.props.data.map((row,index)=>{
+                return <tr key={index}>
+                    <td>{row}</td>
+                </tr>
+            })
+        }
+        </tbody>
+        </Table>
+    }
+})
 const PredictProgress = React.createClass({
     childContextTypes:{
         store:React.PropTypes.any
@@ -30,6 +68,8 @@ const PredictProgress = React.createClass({
         return {
             activeTab:1,
             method:null,
+            dialog:false,
+            dialog_msg:"",
         };
     },
     
@@ -57,6 +97,11 @@ const PredictProgress = React.createClass({
             var state = this.store.getState()
             var form = new FormData()
             form.set("action","predict")
+            form.set("sync",true)
+            this.setState({
+                dialog:true,
+                dialog_msg:"正在努力预测中"
+            })
             _.forEach(state.kwargs,(value,key)=>{
                 form.set(key,value)
             })
@@ -65,7 +110,27 @@ const PredictProgress = React.createClass({
             ).then((response)=>{
                 return response.json()
             }).then((response_json)=>{
-                console.log("onStart response",response_json)
+                if(response_json.code==200){
+                    this.setState({
+                        dialog:true,
+                        dialog_msg:<PredictResult 
+                        data={response_json.data}
+                        headers={response_json.headers} />
+                    })
+                }
+                else if(response_json.code<500){
+                    this.setState({dialog:true,
+                        dialog_msg:"参数错误 "+_.map(response_json.error,(value,key)=>{
+                            return `${key}:${value}`
+                        }).join("")
+                    })
+                }
+                else{
+                    this.setState({
+                        dialog:true,
+                        dialog_msg:`预测失败了${response_json.code}:${response_json.error}`
+                    })
+                }
             })
 
         }
@@ -75,6 +140,9 @@ const PredictProgress = React.createClass({
     },
     handleSelect(selectedKey) {
         this.setState({activeTab:selectedKey})
+    },
+    onCloseDialog(){//原则上还应该有取消请求，不然会重新蹦出来
+        this.setState({"dialog":false})
     },
     render(){
         var nextBtnDisable;
@@ -96,7 +164,7 @@ const PredictProgress = React.createClass({
         justified 
         activeKey={this.state.activeTab} 
         onSelect={this.handleSelect}>
-          <NavItem eventKey={1} disabled={!this.state.dataset}>选择模型</NavItem>
+          <NavItem eventKey={1} >选择模型</NavItem>
           <NavItem eventKey={2} disabled={!this.state.method}>开始</NavItem>
         </Nav> 
         <ButtonToolbar >
@@ -115,6 +183,20 @@ const PredictProgress = React.createClass({
         </ButtonToolbar>
         {this.state.activeTab==1?<MethodList public={true} trained={true} />:null}
         {this.state.activeTab==2?<MethodKwargs />:null}
+
+        <Modal show={this.state.dialog} onHide={this.onCloseDialog}>
+      <Modal.Header>
+        <Modal.Title>预测结果</Modal.Title>
+      </Modal.Header>
+
+      <Modal.Body>
+        {this.state.dialog_msg}
+      </Modal.Body>
+
+      <Modal.Footer>
+        <Button onClick={this.onCloseDialog}>关闭</Button>
+      </Modal.Footer>
+      </Modal>
         </div> 
 
     }

@@ -43,5 +43,7 @@ class MethodKwargs(ModelBase):
         "int",
         "list",
         "image",
-    ]), doc="参数类型验证"
+        "file",
+        "str",
+    ]), doc="参数类型"
     )
