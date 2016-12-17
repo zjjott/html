@@ -7,7 +7,8 @@ import { useRouterHistory,Router, Route, Link, IndexLink, browserHistory } from 
 import {Grid,Tab,Row,Nav,NavItem,Navbar,Panel} from "react-bootstrap"
 import {ProgressBar,Table,Well} from "react-bootstrap"
 const _ = require("underscore")
-
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin()
 import {TrainProgress} from './train'
 import {PredictProgress} from './predict'
 const history = useRouterHistory(createHashHistory)({

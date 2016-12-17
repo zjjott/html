@@ -76,8 +76,8 @@ class NodeLookup(object):
         return self.node_lookup[node_id]
 
 
-@app.task(bind=True, base=MLBaseTask)
-def ClassifyImageTask(self, image):
+@app.task(bind=True, base=MLBaseTask, typing=False)
+def ClassifyImageTask(self, image, **kwargs):
     # Image.open(image)
     image_data = image.read()
     with tf.gfile.FastGFile(

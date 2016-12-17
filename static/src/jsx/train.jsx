@@ -1,3 +1,4 @@
+
 var React = require('react');
 var ReactDom = require('react-dom');
 import Dataset from './dataset'
@@ -5,7 +6,7 @@ import {MethodList,MethodKwargs} from './methods'
 var _ = require("underscore")
 import {Grid,Tab,Row,Nav,NavItem,Navbar,Panel,
 ButtonToolbar,Button} from "react-bootstrap"
-import {EventStore} from './components'
+import {EventStore,newfetch,GetParams} from './components'
 function paramsReducer(state,action){
     switch(action.type){
         case "dataset":{
@@ -13,6 +14,10 @@ function paramsReducer(state,action){
         }
         case "method":{
             return _.extend(state,{method:action.data})
+        }
+        case "kwargs":{
+            return _.extend(state,{kwargs:action.data})
+
         }
         default:
             return state
@@ -37,7 +42,6 @@ const TrainProgress = React.createClass({
             })
     },
     onMethodChange(data){
-        console.log("method",data)
         if(data!=this.state.method)
             this.setState({
                 method:data
@@ -56,7 +60,27 @@ const TrainProgress = React.createClass({
         
     },
     onNextStep(){
-        this.setState({activeTab:this.state.activeTab+1})
+        if(this.state.activeTab<3){
+            this.setState({activeTab:this.state.activeTab+1})
+        }
+        else{
+            var state = this.store.getState()
+            // var params = new GetParams()
+            var form = new FormData()
+            form.set("action","train")
+            form.set("dataset",state.dataset)
+            _.forEach(state.kwargs,(value,key)=>{
+                form.set(key,value)
+            })
+            newfetch(`/task/method/${state.method}/`,"POST",
+                {"body":form}
+            ).then((response)=>{
+                return response.json()
+            }).then((response_json)=>{
+                console.log("onStart response",response_json)
+            })
+
+        }
     },
     onPrevStep(){
         this.setState({activeTab:this.state.activeTab-1})
@@ -97,7 +121,10 @@ const TrainProgress = React.createClass({
         <Button className="pull-right" 
             bsStyle="primary"
             onClick={this.onNextStep}
-            disabled={nextBtnDisable}>下一步</Button>
+            disabled={nextBtnDisable}>{
+                this.state.activeTab<3?"下一步":"开始"
+            }</Button>
+        
         {this.state.activeTab>1?
             <Button className="pull-right" 
             bsStyle="primary" onClick={this.onPrevStep}>上一步</Button>
@@ -105,8 +132,9 @@ const TrainProgress = React.createClass({
             
         </ButtonToolbar>
         {this.state.activeTab==1?<Dataset />:null}
-        {this.state.activeTab==2?<MethodList />:null}
+        {this.state.activeTab==2?<MethodList public={true} trained={false}/>:null}
         {this.state.activeTab==3?<MethodKwargs />:null}
+        
 
 
         </div> 

@@ -39,3 +39,20 @@ def load_system_dataset(catogory, target_column=-1):
             target[i] = np.asarray(row.pop(target_column), dtype=target_dtype)
             data[i] = np.asarray(row, dtype=features_dtype)
         return Dataset(data=data, target=target)
+
+
+def load_dataset(csv_file, target_dtype=np.int,
+                 features_dtype=np.float32,
+                 target_column=-1):
+    data_file = csv.reader(csv_file)
+    header = next(data_file)
+    # data = np.zeros((n_samples, n_features), dtype=features_dtype)
+    data = []
+    # target = np.zeros((n_samples,), dtype=target_dtype)
+    target = []
+    for i, row in enumerate(data_file):
+        target.append(np.asarray(row.pop(target_column), dtype=target_dtype))
+        data.append(np.asarray(row, dtype=features_dtype))
+    target = np.asarray(target, dtype=target_dtype)
+    data = np.asarray(target, dtype=features_dtype)
+    return Dataset(data=data, target=target)

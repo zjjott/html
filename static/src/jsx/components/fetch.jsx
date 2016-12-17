@@ -13,4 +13,20 @@ function newfetch(url,method="GET",options){
     return fetch(url,default_options)
 
 }
-export default newfetch
+class GetParams{
+    constructor(options){
+        this.o = options||{}
+    }
+    toString(){
+        var params=[]
+        for(var key in this.o){
+            params.push(`${key}=${this.o[key]}`)
+
+        }
+        return params.join("&")
+    }
+    set(key,value){
+        this.o[key]=value
+    }
+}
+export {newfetch,GetParams}

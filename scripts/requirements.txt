@@ -18,3 +18,4 @@ boto3==1.4.0
 flake8
 celery==4.0.2
 pillow==3.4.2
+hickle==2.1.0

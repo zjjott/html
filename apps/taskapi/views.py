@@ -5,10 +5,11 @@ from apps.asynctask import app
 from apps.taskapi.models import MethodKwargs, MLMethod
 from apps.taskapi.forms import (ListMethodForm, form_factory)
 from sqlalchemy.sql.expression import or_, and_
-from cPickle import loads
+from cPickle import loads, dumps, HIGHEST_PROTOCOL
 from tornado.web import asynchronous
 from apps.asynctask import app as celery_app
 from tornado.ioloop import IOLoop
+from apps.asynctask.tasks import CustomerTrainTask
 
 
 class ListQueueView(UserAuthAjaxHandle):
@@ -112,15 +113,28 @@ class MethodDetailView(UserAuthAjaxHandle):
             sync = cleaned_data.pop("sync", False)
             if action == "predict" and method.trained:
                 task = loads(method.data)
-                for k, v in cleaned_data.iteritems():
-                    print k, type(v)
-                result = task.apply_async(kwargs=cleaned_data)
+                if isinstance(task, tuple):
+                    task = task[0]
+                    result = task.apply_async(
+                        args=[id],
+                        kwargs=cleaned_data)
+                else:
+                    result = task.apply_async(kwargs=cleaned_data)
                 if sync:
                     self.wait_result(result)
                 else:
                     return self.json_respon(result.task_id)
             elif action == "train":
-                self.json_respon()
+                dataset = cleaned_data.get("dataset")
+                if dataset:
+                    CustomerTrainTask.apply_async(args=[
+                        dataset,
+                        id,
+                        self.current_user
+                    ], kwargs=cleaned_data)
+                    self.json_respon(cleaned_data)
+                else:
+                    pass
             else:
                 return self.json_error_respon("确定你提交了一个可以预测的模型或者可以训练的模型")
         else:

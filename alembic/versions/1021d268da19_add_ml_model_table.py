@@ -23,7 +23,7 @@ from tensorflow.contrib.learn import (
     DNNRegressor,
     DNNClassifier,
 )
-from cPickle import dumps
+from cPickle import dumps, HIGHEST_PROTOCOL
 revision = '1021d268da19'
 down_revision = 'aa0931683486'
 branch_labels = None
@@ -77,7 +77,7 @@ def upgrade():
             "description": modelclass.__doc__,
             "public": True,
             "trained": False,
-            "data": dumps(modelclass)
+            "data": dumps(modelclass, HIGHEST_PROTOCOL)
         }
         for modelclass in [
             LinearRegressor,
@@ -93,7 +93,7 @@ def upgrade():
         "description": "图像(100x100)分类,类别1000",
         "public": True,
         "trained": True,
-        "data": dumps(ClassifyImageTask),
+        "data": dumps(ClassifyImageTask, HIGHEST_PROTOCOL),
     })
     op.bulk_insert(mlmethods_tbl,
                    data
@@ -104,10 +104,26 @@ def upgrade():
                        {
                            "model_id": i + 1,
                            "name": "dimension",
-                           "label": "特征维度",
+                           "label": "特征维数",
                            "type": "int",
                            "required": True,
                        } for i in range(4)
+                   ] +
+                   [
+                       {
+                           "model_id": 2,
+                           "name": "n_classes",
+                           "label": "目标类别数量",
+                           "type": "int",
+                           "required": True,
+                       },
+                       {
+                           "model_id": 4,
+                           "name": "n_classes",
+                           "label": "目标类别数量",
+                           "type": "int",
+                           "required": True,
+                       }
                    ]
                    )
     op.bulk_insert(methodkwargs_tbl,

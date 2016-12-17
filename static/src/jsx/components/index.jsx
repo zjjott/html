@@ -1,3 +1,3 @@
-import newfetch from "./fetch"
+import {newfetch,GetParams} from "./fetch"
 import EventStore from "./event"
-export {newfetch,EventStore}
+export {newfetch,EventStore,GetParams}
